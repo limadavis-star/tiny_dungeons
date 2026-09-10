@@ -1,0 +1,10 @@
+# macOS metadata
+.DS_Store
+
+# Visual Studio Code settings specific to this computer
+.vscode/
+
+# Temporary and backup files created by editors
+*.tmp
+*.swp
+*~
