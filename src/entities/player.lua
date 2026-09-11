@@ -18,6 +18,7 @@ function Player.create(world, x, y)
         :give("position", x, y)
         :give("velocity", 0, 0)
         :give("speed", 150)
+        :give("controllable")
         :give(
             "animation",
             image,
