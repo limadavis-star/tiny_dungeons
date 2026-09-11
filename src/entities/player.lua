@@ -4,13 +4,13 @@ local anim8 = require("libraries.anim8.anim8")
 local Player = {}
 
 function Player.create(world, x, y)
-    local image = love.graphics.newImage("assets/images/player/ninja-green/idle.png")
+    local image = love.graphics.newImage("assets/images/player/ninja-green/walk.png")
 
 
     local grid = anim8.newGrid(16, 16, image:getWidth(), image:getHeight())
 
-    local idleAnimation = anim8.newAnimation(
-        grid(1, 1),
+    local walkAnimation = anim8.newAnimation(
+        grid(1, "1-4"),
         0.15
     )
 
@@ -22,7 +22,7 @@ function Player.create(world, x, y)
         :give(
             "animation",
             image,
-            idleAnimation
+            walkAnimation
         )
 
     return entity
