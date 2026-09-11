@@ -12,16 +12,20 @@ local Player = require("src.entities.player")
 local AnimationSystem = require("src.systems.animation_system")
 local AnimationRenderSystem = require("src.systems.animation_render_system")
 local InputSystem = require("src.systems.input_system")
+local PlayerAnimationSystem = require("src.systems.player_animation_system")
 
 local Gameplay = {}
 
 function Gameplay:enter()
     self.ecsWorld = Concord.world()
+
     self.ecsWorld:addSystems(
         InputSystem,
+        PlayerAnimationSystem,
         AnimationSystem,
         AnimationRenderSystem
     )
+
     self.player = Player.create(self.ecsWorld,
         love.graphics.getWidth() / 2,
         love.graphics.getHeight() / 2)
