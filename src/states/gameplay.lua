@@ -14,25 +14,35 @@ local AnimationSystem = require("src.systems.animation_system")
 local AnimationRenderSystem = require("src.systems.animation_render_system")
 local InputSystem = require("src.systems.input_system")
 local PlayerAnimationSystem = require("src.systems.player_animation_system")
-local PhysicWorld = require("src.physics.physics_world")
+local PhysicsWorld = require("src.physics.physics_world")
+local PhysicsSystem = require("src.systems.physics_system")
 
 local Gameplay = {}
 
 function Gameplay:enter()
     self.ecsWorld = Concord.world()
-    self.physicWorld = PhysicWorld.create()
+    self.physicWorld = PhysicsWorld.create()
 
     self.ecsWorld:addSystems(
         InputSystem,
+        PhysicsSystem,
         PlayerAnimationSystem,
         AnimationSystem,
         AnimationRenderSystem
     )
 
+
     self.player = Player.create(self.ecsWorld,
         self.physicWorld,
         love.graphics.getWidth() / 2,
         love.graphics.getHeight() / 2)
+
+    self.physicsSystem =
+        self.ecsWorld:getSystem(PhysicsSystem)
+
+    self.physicsSystem:setWorld(
+        self.physicWorld
+    )
 
 
     self.moveX = 0
@@ -58,6 +68,39 @@ function Gameplay:draw()
         "Velocity Y: " .. self.player.velocity.y,
         32,
         72
+    )
+
+    love.graphics.print(
+        "Player X: " .. math.floor(self.player.position.x),
+        32,
+        92
+    )
+
+    love.graphics.print(
+        "Player Y: " .. math.floor(self.player.position.y),
+        32,
+        112
+    )
+
+    love.graphics.print(
+        "Physics pool: "
+        .. #self.physicsSystem.pool,
+        32,
+        132
+    )
+
+
+    local physicsVelocityX,
+    physicsVelocityY =
+        self.player.collider.body.body:getLinearVelocity()
+
+    love.graphics.print(
+        "Physics velocity: "
+        .. math.floor(physicsVelocityX)
+        .. ", "
+        .. math.floor(physicsVelocityY),
+        32,
+        172
     )
 end
 
