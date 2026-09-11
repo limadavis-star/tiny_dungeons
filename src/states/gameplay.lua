@@ -1,5 +1,4 @@
 local Concord = require("libraries.concord")
-local controls = require("src.input.controls")
 
 require("src.components.position")
 require("src.components.animation")
@@ -12,12 +11,14 @@ local Player = require("src.entities.player")
 
 local AnimationSystem = require("src.systems.animation_system")
 local AnimationRenderSystem = require("src.systems.animation_render_system")
+local InputSystem = require("src.systems.input_system")
 
 local Gameplay = {}
 
 function Gameplay:enter()
     self.ecsWorld = Concord.world()
     self.ecsWorld:addSystems(
+        InputSystem,
         AnimationSystem,
         AnimationRenderSystem
     )
@@ -31,10 +32,6 @@ function Gameplay:enter()
 end
 
 function Gameplay:update(dt)
-    controls:update()
-    self.moveX, self.moveY = controls:get("move")
-
-
     self.ecsWorld:emit("update", dt)
 end
 
@@ -44,13 +41,13 @@ function Gameplay:draw()
     love.graphics.print("Tiny Dungeons", 32, 32)
 
     love.graphics.print(
-        "Movement X: " .. self.moveX,
+        "Velocity X: " .. self.player.velocity.x,
         32,
         52
     )
 
     love.graphics.print(
-        "Movement Y: " .. self.moveY,
+        "Velocity Y: " .. self.player.velocity.y,
         32,
         72
     )
