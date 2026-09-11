@@ -30,6 +30,7 @@ function Gameplay:enter()
     )
 
     self.player = Player.create(self.ecsWorld,
+        self.physicWorld,
         love.graphics.getWidth() / 2,
         love.graphics.getHeight() / 2)
 

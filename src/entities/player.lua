@@ -1,9 +1,10 @@
 local Concord = require("libraries.concord")
 local anim8 = require("libraries.anim8.anim8")
+local breezefield = require("libraries.breezefield")
 
 local Player = {}
 
-function Player.create(world, x, y)
+function Player.create(ecsWorld, physicWorld, x, y)
     local image = love.graphics.newImage("assets/images/player/ninja-green/walk.png")
 
 
@@ -14,11 +15,16 @@ function Player.create(world, x, y)
         0.15
     )
 
-    local entity = Concord.entity(world)
+    local playerCollider = breezefield.Collider.new(physicWorld, "Circle", x, y, 6)
+
+    playerCollider:setFixedRotation(true)
+
+    local entity = Concord.entity(ecsWorld)
         :give("position", x, y)
         :give("velocity", 0, 0)
         :give("speed", 150)
         :give("controllable")
+        :give("collider", playerCollider)
         :give(
             "animation",
             image,
