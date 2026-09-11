@@ -10,7 +10,7 @@ function Player.create(world, x, y)
     local grid = anim8.newGrid(16, 16, image:getWidth(), image:getHeight())
 
     local idleAnimation = anim8.newAnimation(
-        grid("1-4", 1),
+        grid(1, 1),
         0.15
     )
 
