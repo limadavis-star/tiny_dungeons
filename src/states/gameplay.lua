@@ -13,11 +13,13 @@ local AnimationSystem = require("src.systems.animation_system")
 local AnimationRenderSystem = require("src.systems.animation_render_system")
 local InputSystem = require("src.systems.input_system")
 local PlayerAnimationSystem = require("src.systems.player_animation_system")
+local PhysicWorld = require("src.physics.physics_world")
 
 local Gameplay = {}
 
 function Gameplay:enter()
     self.ecsWorld = Concord.world()
+    self.physicWorld = PhysicWorld.create()
 
     self.ecsWorld:addSystems(
         InputSystem,
