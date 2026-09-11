@@ -4,6 +4,7 @@ local controls = require("src.input.controls")
 require("src.components.position")
 require("src.components.animation")
 require("src.components.velocity")
+require("src.components.speed")
 
 local Player = require("src.entities.player")
 
