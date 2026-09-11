@@ -5,14 +5,18 @@ require("src.components.position")
 require("src.components.animation")
 local Player = require("src.entities.player")
 
+
 local AnimationSystem = require("src.systems.animation_system")
+local AnimationRenderSystem = require("src.systems.animation_render_system")
 
 local Gameplay = {}
 
 function Gameplay:enter()
     self.ecsWorld = Concord.world()
-    self.ecsWorld:addSystem(AnimationSystem)
-
+    self.ecsWorld:addSystems(
+        AnimationSystem,
+        AnimationRenderSystem
+    )
     self.player = Player.create(self.ecsWorld,
         love.graphics.getWidth() / 2,
         love.graphics.getHeight() / 2)
