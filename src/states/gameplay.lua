@@ -1,10 +1,17 @@
 local Concord = require("libraries.concord")
 local controls = require("src.input.controls")
 
+require("src.components.position")
+require("src.components.animation")
+
+local AnimationSystem = require("src.systems.animation_system")
+
 local Gameplay = {}
 
 function Gameplay:enter()
     self.ecsWorld = Concord.world()
+    self.ecsWorld:addSystem(AnimationSystem)
+
     self.moveX = 0
     self.moveY = 0
 end
