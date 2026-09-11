@@ -16,6 +16,7 @@ function Player.create(world, x, y)
 
     local entity = Concord.entity(world)
         :give("position", x, y)
+        :give("velocity", 0, 0)
         :give(
             "animation",
             image,

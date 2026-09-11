@@ -3,6 +3,8 @@ local controls = require("src.input.controls")
 
 require("src.components.position")
 require("src.components.animation")
+require("src.components.velocity")
+
 local Player = require("src.entities.player")
 
 
@@ -28,10 +30,8 @@ end
 
 function Gameplay:update(dt)
     controls:update()
-
-    self.ecsWorld:emit("update", dt)
-
     self.moveX, self.moveY = controls:get("move")
+
 
     self.ecsWorld:emit("update", dt)
 end
