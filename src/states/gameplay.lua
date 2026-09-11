@@ -5,6 +5,7 @@ require("src.components.animation")
 require("src.components.velocity")
 require("src.components.speed")
 require("src.components.controllable")
+require("src.components.collider")
 
 local Player = require("src.entities.player")
 
