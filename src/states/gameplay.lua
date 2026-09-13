@@ -30,6 +30,14 @@ function Gameplay:enter()
     self.ecsWorld = Concord.world()
     self.physicWorld = PhysicsWorld.create()
 
+    self.ecsWorld:addSystems(
+        InputSystem,
+        PlayerAnimationSystem,
+        AnimationSystem,
+        PhysicsSystem,
+        RoomRenderSystem,
+        AnimationRenderSystem
+    )
 
     self.room = Room.create(self.ecsWorld, 160, 96, 1040, 576)
 
@@ -37,50 +45,43 @@ function Gameplay:enter()
     local y = self.room.position.y
     local width = self.room.room.width
     local height = self.room.room.height
+
     local thickness = 8
+    local doorWidth = 96
+
+    local doorLeft = x + (width - doorWidth) / 2
+    local doorRight = doorLeft + doorWidth
+    local outerLeft = x - thickness / 2
+    local outerRight = x + width + thickness / 2
 
     Wall.create(
-        self.ecsWorld,
-        self.physicWorld,
-        x - thickness / 2,
-        y - thickness / 2,
-        width + thickness,
-        thickness
+        self.ecsWorld, self.physicWorld,
+        outerLeft, y - thickness / 2,
+        doorLeft - outerLeft, thickness
     )
 
     Wall.create(
-        self.ecsWorld,
-        self.physicWorld,
-        x - thickness / 2,
-        y + height - thickness / 2,
-        width + thickness,
-        thickness
+        self.ecsWorld, self.physicWorld,
+        doorRight, y - thickness / 2,
+        outerRight - doorRight, thickness
     )
 
     Wall.create(
-        self.ecsWorld,
-        self.physicWorld,
-        x - thickness / 2,
-        y + thickness / 2,
-        thickness,
-        height - thickness
+        self.ecsWorld, self.physicWorld,
+        outerLeft, y + height - thickness / 2,
+        width + thickness, thickness
     )
 
     Wall.create(
-        self.ecsWorld,
-        self.physicWorld,
-        x + width - thickness / 2,
-        y + thickness / 2,
-        thickness,
-        height - thickness
+        self.ecsWorld, self.physicWorld,
+        x - thickness / 2, y + thickness / 2,
+        thickness, height - thickness
     )
-    self.ecsWorld:addSystems(
-        InputSystem,
-        PhysicsSystem,
-        PlayerAnimationSystem,
-        AnimationSystem,
-        RoomRenderSystem,
-        AnimationRenderSystem
+
+    Wall.create(
+        self.ecsWorld, self.physicWorld,
+        x + width - thickness / 2, y + thickness / 2,
+        thickness, height - thickness
     )
 
 
