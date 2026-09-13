@@ -15,7 +15,7 @@ require("src.components.wall")
 local Player = require("src.entities.player")
 local Room = require("src.entities.room")
 local RoomWallBuilder = require("src.physics.room_wall_builder")
-
+local RoomTransition = require("src.graphics.room_transition")
 
 local AnimationSystem = require("src.systems.animation_system")
 local AnimationRenderSystem = require("src.systems.animation_render_system")
@@ -27,11 +27,7 @@ local RoomRenderSystem = require("src.systems.room_render_system")
 
 local Gameplay = {}
 
-local function roomCenter(roomEntity)
-    return
-        roomEntity.position.x + roomEntity.room.width / 2,
-        roomEntity.position.y + roomEntity.room.height / 2
-end
+
 
 function Gameplay:enter()
     self.ecsWorld = Concord.world()
@@ -66,11 +62,17 @@ function Gameplay:enter()
         self.upperRoom
     )
 
-    self.activeRoom = self.room
-    self.transition = nil
-    self.camera = Camera(roomCenter(self.activeRoom))
+    self.camera = Camera(
+        self.player.position.x,
+        self.player.position.y
+    )
 
-    self.camera = Camera(roomCenter(self.activeRoom))
+    self.roomTransition = RoomTransition.create(
+        self.camera,
+        self.player,
+        self.room,
+        self.upperRoom
+    )
 
     self.physicsSystem =
         self.ecsWorld:getSystem(PhysicsSystem)
@@ -86,58 +88,7 @@ end
 
 function Gameplay:update(dt)
     self.ecsWorld:emit("update", dt)
-
-    if self.transition then
-        local transition = self.transition
-
-        transition.elapsed = math.min(
-            transition.elapsed + dt,
-            transition.duration
-        )
-
-        local progress = transition.elapsed / transition.duration
-        local smoothProgress = progress * progress * (3 - 2 * progress)
-
-        self.camera:lookAt(
-            transition.fromX
-            + (transition.toX - transition.fromX) * smoothProgress,
-            transition.fromY
-            + (transition.toY - transition.fromY) * smoothProgress
-        )
-
-        if progress >= 1 then
-            self.activeRoom = transition.toRoom
-            self.transition = nil
-            self.player:give("controllable")
-        end
-
-        return
-    end
-
-    local nextRoom = self.room
-
-    if self.player.position.y < self.room.position.y then
-        nextRoom = self.upperRoom
-    end
-
-    if nextRoom ~= self.activeRoom then
-        self.player.velocity.x = 0
-        self.player.velocity.y = 0
-        self.player:remove("controllable")
-
-        local fromX, fromY = roomCenter(self.activeRoom)
-        local toX, toY = roomCenter(nextRoom)
-
-        self.transition = {
-            fromX = fromX,
-            fromY = fromY,
-            toX = toX,
-            toY = toY,
-            toRoom = nextRoom,
-            elapsed = 0,
-            duration = 0.45,
-        }
-    end
+    RoomTransition.update(self.roomTransition, dt)
 end
 
 function Gameplay:draw()
