@@ -1,6 +1,6 @@
 local DebugHud = {}
 
-function DebugHud.draw(player, physicsSystem)
+function DebugHud.draw(player, physicsSystem, seed)
     love.graphics.setColor(1, 1, 1, 1)
 
     love.graphics.print("Tiny Dungeons", 32, 32)
@@ -36,6 +36,8 @@ function DebugHud.draw(player, physicsSystem)
         32,
         172
     )
+
+    love.graphics.print("Seed: " .. seed, 32, 192)
 end
 
 return DebugHud

@@ -30,7 +30,10 @@ local function makeRoom(gridX, gridY)
     }
 end
 
-function RoomLayout.create()
+function RoomLayout.create(seed)
+    seed = seed or os.time()
+    local random = love.math.newRandomGenerator(seed)
+
     local startingRoom = makeRoom(0, 0)
     local rooms = { startingRoom }
 
@@ -62,7 +65,7 @@ function RoomLayout.create()
             end
         end
 
-        local chosen = candidates[love.math.random(#candidates)]
+        local chosen = candidates[random:random(#candidates)]
         local newRoom = makeRoom(chosen.gridX, chosen.gridY)
 
         chosen.from.doors[chosen.direction.door] = true
@@ -72,7 +75,7 @@ function RoomLayout.create()
         occupied[positionKey(chosen.gridX, chosen.gridY)] = newRoom
     end
 
-    return rooms
+    return rooms, seed
 end
 
 return RoomLayout

@@ -55,11 +55,11 @@ function Gameplay:enter()
         AnimationRenderSystem
     )
 
-    local layout = RoomLayout.create()
-
+    local layout, seed = RoomLayout.create()
+    self.seed = seed
     self.rooms = {}
 
-    for _, roomData in ipairs(RoomLayout.create()) do
+    for _, roomData in ipairs(layout) do
         self.rooms[#self.rooms + 1] =
             createRoom(self.ecsWorld, roomData)
     end
@@ -111,7 +111,7 @@ function Gameplay:draw()
 
 
 
-    DebugHud.draw(self.player, self.physicsSystem)
+    DebugHud.draw(self.player, self.physicsSystem, self.seed)
 end
 
 return Gameplay
