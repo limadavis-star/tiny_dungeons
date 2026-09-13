@@ -33,14 +33,18 @@ function RoomRenderSystem:draw()
         love.graphics.setColor(0.55, 0.75, 0.95, 1)
         love.graphics.setLineWidth(8)
 
-        if room.doorSide == "top" then
+        if room.doors.top then
             love.graphics.line(left, top, doorLeft, top)
             love.graphics.line(doorRight, top, right, top)
-            love.graphics.line(left, bottom, right, bottom)
-        elseif room.doorSide == "bottom" then
+        else
             love.graphics.line(left, top, right, top)
+        end
+
+        if room.doors.bottom then
             love.graphics.line(left, bottom, doorLeft, bottom)
             love.graphics.line(doorRight, bottom, right, bottom)
+        else
+            love.graphics.line(left, bottom, right, bottom)
         end
 
         love.graphics.line(left, top, left, bottom)

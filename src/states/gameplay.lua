@@ -43,11 +43,11 @@ function Gameplay:enter()
     )
 
     self.room = Room.create(
-        self.ecsWorld, 160, 96, 1040, 576, 96, "top"
+        self.ecsWorld, 160, 96, 1040, 576, 96, { top = true }
     )
 
     self.upperRoom = Room.create(
-        self.ecsWorld, 160, -480, 1040, 576, 96, "bottom"
+        self.ecsWorld, 160, -480, 1040, 576, 96, { bottom = true }
     )
 
     self.player = Player.create(self.ecsWorld,

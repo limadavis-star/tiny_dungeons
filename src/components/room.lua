@@ -2,11 +2,11 @@ local Concord = require("libraries.concord")
 
 local Room = Concord.component(
     "room",
-    function(component, width, height, doorWidth, doorSide)
+    function(component, width, height, doorWidth, doors)
         component.width = width
         component.height = height
         component.doorWidth = doorWidth
-        component.doorSide = doorSide
+        component.doors = doors
     end
 )
 
