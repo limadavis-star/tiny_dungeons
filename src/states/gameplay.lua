@@ -15,6 +15,7 @@ local Player = require("src.entities.player")
 local Room = require("src.entities.room")
 local RoomWallBuilder = require("src.physics.room_wall_builder")
 local RoomTransition = require("src.graphics.room_transition")
+local RoomLayout = require("src.world.room_layout")
 
 local AnimationSystem = require("src.systems.animation_system")
 local AnimationRenderSystem = require("src.systems.animation_render_system")
@@ -26,6 +27,18 @@ local RoomRenderSystem = require("src.systems.room_render_system")
 local DebugHud = require("src.ui.debug_hud")
 
 local Gameplay = {}
+
+local function createRoom(ecsWorld, data)
+    return Room.create(
+        ecsWorld,
+        data.x,
+        data.y,
+        data.width,
+        data.height,
+        data.doorWidth,
+        data.doors
+    )
+end
 
 
 
@@ -42,21 +55,11 @@ function Gameplay:enter()
         AnimationRenderSystem
     )
 
-    self.room = Room.create(
-        self.ecsWorld,
-        160, 96, 1040, 576, 96,
-        { top = true, right = true }
-    )
+    local layout = RoomLayout.create()
 
-    self.upperRoom = Room.create(
-        self.ecsWorld, 160, -480, 1040, 576, 96, { bottom = true }
-    )
-
-    self.rightRoom = Room.create(
-        self.ecsWorld,
-        1200, 96, 1040, 576, 96,
-        { left = true }
-    )
+    self.room = createRoom(self.ecsWorld, layout.start)
+    self.upperRoom = createRoom(self.ecsWorld, layout.upper)
+    self.rightRoom = createRoom(self.ecsWorld, layout.right)
 
     self.player = Player.create(self.ecsWorld,
         self.physicWorld,
