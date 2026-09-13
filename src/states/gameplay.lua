@@ -40,7 +40,13 @@ function Gameplay:enter()
         AnimationRenderSystem
     )
 
-    self.room = Room.create(self.ecsWorld, 160, 96, 1040, 576, 96)
+    self.room = Room.create(
+        self.ecsWorld, 160, 96, 1040, 576, 96, "top"
+    )
+
+    self.upperRoom = Room.create(
+        self.ecsWorld, 160, -480, 1040, 576, 96, "bottom"
+    )
     local x = self.room.position.x
     local y = self.room.position.y
     local width = self.room.room.width
@@ -48,7 +54,6 @@ function Gameplay:enter()
     local doorWidth = self.room.room.doorWidth
 
     local thickness = 8
-    local doorWidth = 96
 
     local doorLeft = x + (width - doorWidth) / 2
     local doorRight = doorLeft + doorWidth
@@ -84,7 +89,26 @@ function Gameplay:enter()
         x + width - thickness / 2, y + thickness / 2,
         thickness, height - thickness
     )
+    local upperY = self.upperRoom.position.y
+    local upperHeight = self.upperRoom.room.height
 
+    Wall.create(
+        self.ecsWorld, self.physicWorld,
+        outerLeft, upperY - thickness / 2,
+        width + thickness, thickness
+    )
+
+    Wall.create(
+        self.ecsWorld, self.physicWorld,
+        x - thickness / 2, upperY + thickness / 2,
+        thickness, upperHeight - thickness
+    )
+
+    Wall.create(
+        self.ecsWorld, self.physicWorld,
+        x + width - thickness / 2, upperY + thickness / 2,
+        thickness, upperHeight - thickness
+    )
 
     self.player = Player.create(self.ecsWorld,
         self.physicWorld,
@@ -113,9 +137,15 @@ function Gameplay:update(dt)
 end
 
 function Gameplay:draw()
+    local activeRoom = self.room
+
+    if self.player.position.y < self.room.position.y then
+        activeRoom = self.upperRoom
+    end
+
     self.camera:lookAt(
-        self.player.position.x,
-        self.player.position.y
+        activeRoom.position.x + activeRoom.room.width / 2,
+        activeRoom.position.y + activeRoom.room.height / 2
     )
 
     self.camera:attach()
