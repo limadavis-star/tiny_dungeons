@@ -57,11 +57,12 @@ function Gameplay:enter()
 
     local layout = RoomLayout.create()
 
-    self.room = createRoom(self.ecsWorld, layout.start)
-    self.upperRoom = createRoom(self.ecsWorld, layout.upper)
-    self.rightRoom = createRoom(self.ecsWorld, layout.right)
-    self.bottomRoom = createRoom(self.ecsWorld, layout.lower)
+    self.rooms = {}
 
+    for _, roomData in ipairs(RoomLayout.create()) do
+        self.rooms[#self.rooms + 1] =
+            createRoom(self.ecsWorld, roomData)
+    end
     self.player = Player.create(self.ecsWorld,
         self.physicWorld,
         love.graphics.getWidth() / 2,
@@ -71,12 +72,7 @@ function Gameplay:enter()
     RoomWallBuilder.create(
         self.ecsWorld,
         self.physicWorld,
-        {
-            self.room,
-            self.upperRoom,
-            self.rightRoom,
-            self.bottomRoom,
-        }
+        self.rooms
     )
 
     self.camera = Camera(
@@ -86,12 +82,7 @@ function Gameplay:enter()
     self.roomTransition = RoomTransition.create(
         self.camera,
         self.player,
-        {
-            self.room,
-            self.upperRoom,
-            self.rightRoom,
-            self.bottomRoom,
-        }
+        self.rooms
     )
 
     self.physicsSystem =
