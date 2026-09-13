@@ -79,13 +79,10 @@ function Gameplay:enter()
         self.player.position.x,
         self.player.position.y
     )
-
     self.roomTransition = RoomTransition.create(
         self.camera,
         self.player,
-        self.room,
-        self.upperRoom,
-        self.rightRoom
+        { self.room, self.upperRoom, self.rightRoom }
     )
 
     self.physicsSystem =
