@@ -52,16 +52,24 @@ function Gameplay:enter()
         self.ecsWorld, 160, -480, 1040, 576, 96, { bottom = true }
     )
 
+    self.rightRoom = Room.create(
+        self.ecsWorld,
+        1200, 96, 1040, 576, 96,
+        { left = true }
+    )
+
     self.player = Player.create(self.ecsWorld,
         self.physicWorld,
         love.graphics.getWidth() / 2,
         love.graphics.getHeight() / 2)
 
+
     RoomWallBuilder.create(
         self.ecsWorld,
         self.physicWorld,
         self.room,
-        self.upperRoom
+        self.upperRoom,
+        self.rightRoom
     )
 
     self.camera = Camera(
