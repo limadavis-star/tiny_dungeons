@@ -60,6 +60,7 @@ function Gameplay:enter()
     self.room = createRoom(self.ecsWorld, layout.start)
     self.upperRoom = createRoom(self.ecsWorld, layout.upper)
     self.rightRoom = createRoom(self.ecsWorld, layout.right)
+    self.bottomRoom = createRoom(self.ecsWorld, layout.lower)
 
     self.player = Player.create(self.ecsWorld,
         self.physicWorld,
@@ -82,7 +83,12 @@ function Gameplay:enter()
     self.roomTransition = RoomTransition.create(
         self.camera,
         self.player,
-        { self.room, self.upperRoom, self.rightRoom }
+        {
+            self.room,
+            self.upperRoom,
+            self.rightRoom,
+            self.bottomRoom,
+        }
     )
 
     self.physicsSystem =

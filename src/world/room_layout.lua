@@ -14,7 +14,11 @@ function RoomLayout.create()
             width = width,
             height = height,
             doorWidth = doorWidth,
-            doors = { top = true, right = true },
+            doors = {
+                top = true,
+                right = true,
+                bottom = true,
+            },
         },
 
         upper = {
@@ -33,6 +37,14 @@ function RoomLayout.create()
             height = height,
             doorWidth = doorWidth,
             doors = { left = true },
+        },
+        lower = {
+            x = x,
+            y = y + height,
+            width = width,
+            height = height,
+            doorWidth = doorWidth,
+            doors = { top = true },
         },
     }
 end
