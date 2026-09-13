@@ -6,8 +6,12 @@ require("src.components.velocity")
 require("src.components.speed")
 require("src.components.controllable")
 require("src.components.collider")
+require("src.entities.room")
+require("src.components.room")
+
 
 local Player = require("src.entities.player")
+local Room = require("src.entities.room")
 
 
 local AnimationSystem = require("src.systems.animation_system")
@@ -16,6 +20,7 @@ local InputSystem = require("src.systems.input_system")
 local PlayerAnimationSystem = require("src.systems.player_animation_system")
 local PhysicsWorld = require("src.physics.physics_world")
 local PhysicsSystem = require("src.systems.physics_system")
+local RoomRenderSystem = require("src.systems.room_render_system")
 
 local Gameplay = {}
 
@@ -23,11 +28,14 @@ function Gameplay:enter()
     self.ecsWorld = Concord.world()
     self.physicWorld = PhysicsWorld.create()
 
+    self.room = Room.create(self.ecsWorld, 160, 96, 1040, 576)
+
     self.ecsWorld:addSystems(
         InputSystem,
         PhysicsSystem,
         PlayerAnimationSystem,
         AnimationSystem,
+        RoomRenderSystem,
         AnimationRenderSystem
     )
 
