@@ -74,7 +74,7 @@ function RoomLayout.create(seed)
         rooms[#rooms + 1] = newRoom
         occupied[positionKey(chosen.gridX, chosen.gridY)] = newRoom
     end
-
+    rooms[#rooms].isGoal = true
     return rooms, seed
 end
 

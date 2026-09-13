@@ -21,6 +21,18 @@ function RoomRenderSystem:draw()
             room.height
         )
 
+        if room.isGoal then
+            local label = "SAÍDA"
+            local font = love.graphics.getFont()
+
+            love.graphics.setColor(1, 0.8, 0.3, 1)
+            love.graphics.print(
+                label,
+                position.x + (room.width - font:getWidth(label)) / 2,
+                position.y + (room.height - font:getHeight()) / 2
+            )
+        end
+
         local left = position.x
         local right = position.x + room.width
         local top = position.y

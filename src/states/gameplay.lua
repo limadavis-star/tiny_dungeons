@@ -36,7 +36,8 @@ local function createRoom(ecsWorld, data)
         data.width,
         data.height,
         data.doorWidth,
-        data.doors
+        data.doors,
+        data.isGoal
     )
 end
 
@@ -56,6 +57,9 @@ function Gameplay:enter()
     )
 
     local layout, seed = RoomLayout.create()
+    for index, roomData in ipairs(layout) do
+        print(index, roomData.isGoal, roomData.x, roomData.y)
+    end
     self.seed = seed
     self.rooms = {}
 
