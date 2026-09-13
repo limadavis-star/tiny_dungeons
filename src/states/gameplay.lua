@@ -8,7 +8,6 @@ require("src.components.speed")
 require("src.components.controllable")
 require("src.components.collider")
 require("src.entities.room")
-require("src.components.room")
 require("src.components.wall")
 
 
@@ -96,10 +95,7 @@ function Gameplay:draw()
     self.ecsWorld:emit("draw")
     self.camera:detach()
 
-    love.graphics.setColor(1, 1, 1, 1)
-    self.camera:attach()
-    self.ecsWorld:emit("draw")
-    self.camera:detach()
+
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.print("Tiny Dungeons", 32, 32)
 
