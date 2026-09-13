@@ -39,12 +39,12 @@ function Gameplay:enter()
         AnimationRenderSystem
     )
 
-    self.room = Room.create(self.ecsWorld, 160, 96, 1040, 576)
-
+    self.room = Room.create(self.ecsWorld, 160, 96, 1040, 576, 96)
     local x = self.room.position.x
     local y = self.room.position.y
     local width = self.room.room.width
     local height = self.room.room.height
+    local doorWidth = self.room.room.doorWidth
 
     local thickness = 8
     local doorWidth = 96

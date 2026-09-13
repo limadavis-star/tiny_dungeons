@@ -21,7 +21,7 @@ function RoomRenderSystem:draw()
             room.height
         )
 
-        local doorWidth = 96
+        local doorWidth = room.doorWidth
         local doorLeft = position.x + (room.width - doorWidth) / 2
         local doorRight = doorLeft + doorWidth
 
