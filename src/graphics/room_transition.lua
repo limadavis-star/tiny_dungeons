@@ -6,7 +6,7 @@ local function roomCenter(roomEntity)
         roomEntity.position.y + roomEntity.room.height / 2
 end
 
-function RoomTransition.create(camera, player, lowerRoom, upperRoom)
+function RoomTransition.create(camera, player, lowerRoom, upperRoom, rightRoom)
     local centerX, centerY = roomCenter(lowerRoom)
     camera:lookAt(centerX, centerY)
 
@@ -15,6 +15,7 @@ function RoomTransition.create(camera, player, lowerRoom, upperRoom)
         player = player,
         lowerRoom = lowerRoom,
         upperRoom = upperRoom,
+        rightRoom = rightRoom,
         activeRoom = lowerRoom,
         transition = nil,
     }
@@ -52,6 +53,8 @@ function RoomTransition.update(state, dt)
 
     if state.player.position.y < state.lowerRoom.position.y then
         nextRoom = state.upperRoom
+    elseif state.player.position.x >= state.rightRoom.position.x then
+        nextRoom = state.rightRoom
     end
 
     if nextRoom == state.activeRoom then
