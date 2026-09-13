@@ -71,10 +71,12 @@ function Gameplay:enter()
     RoomWallBuilder.create(
         self.ecsWorld,
         self.physicWorld,
-        self.room,
-        self.upperRoom,
-        self.rightRoom,
-        self.bottomRoom
+        {
+            self.room,
+            self.upperRoom,
+            self.rightRoom,
+            self.bottomRoom,
+        }
     )
 
     self.camera = Camera(

@@ -2,126 +2,125 @@ local Wall = require("src.entities.wall")
 
 local RoomWallBuilder = {}
 
-function RoomWallBuilder.create(ecsWorld, physicWorld, lowerRoom, upperRoom, rightRoom, bottomRoom)
-    local x = lowerRoom.position.x
-    local y = lowerRoom.position.y
-    local width = lowerRoom.room.width
-    local height = lowerRoom.room.height
-    local doorWidth = lowerRoom.room.doorWidth
-    local thickness = 8
+local THICKNESS = 8
 
-    local doorLeft = x + (width - doorWidth) / 2
-    local doorRight = doorLeft + doorWidth
-    local outerLeft = x - thickness / 2
-    local outerRight = x + width + thickness / 2
+local function positionKey(x, y)
+    return x .. ":" .. y
+end
 
-    Wall.create(
-        ecsWorld, physicWorld,
-        outerLeft, y - thickness / 2,
-        doorLeft - outerLeft, thickness
-    )
+local function horizontalWall(
+    ecsWorld, physicWorld, left, right, y, doorLeft, doorRight
+)
+    if doorLeft then
+        Wall.create(
+            ecsWorld, physicWorld,
+            left, y, doorLeft - left, THICKNESS
+        )
 
-    Wall.create(
-        ecsWorld, physicWorld,
-        doorRight, y - thickness / 2,
-        outerRight - doorRight, thickness
-    )
+        Wall.create(
+            ecsWorld, physicWorld,
+            doorRight, y, right - doorRight, THICKNESS
+        )
+    else
+        Wall.create(
+            ecsWorld, physicWorld,
+            left, y, right - left, THICKNESS
+        )
+    end
+end
 
-    Wall.create(
-        ecsWorld, physicWorld,
-        outerLeft, y + height - thickness / 2,
-        doorLeft - outerLeft, thickness
-    )
+local function verticalWall(
+    ecsWorld, physicWorld, x, top, bottom, doorTop, doorBottom
+)
+    if doorTop then
+        Wall.create(
+            ecsWorld, physicWorld,
+            x, top, THICKNESS, doorTop - top
+        )
 
-    Wall.create(
-        ecsWorld, physicWorld,
-        doorRight, y + height - thickness / 2,
-        outerRight - doorRight, thickness
-    )
+        Wall.create(
+            ecsWorld, physicWorld,
+            x, doorBottom, THICKNESS, bottom - doorBottom
+        )
+    else
+        Wall.create(
+            ecsWorld, physicWorld,
+            x, top, THICKNESS, bottom - top
+        )
+    end
+end
 
-    Wall.create(
-        ecsWorld, physicWorld,
-        x - thickness / 2, y + thickness / 2,
-        thickness, height - thickness
-    )
+function RoomWallBuilder.create(ecsWorld, physicWorld, rooms)
+    local roomsByPosition = {}
 
-    local doorTop = y + (height - doorWidth) / 2
-    local doorBottom = doorTop + doorWidth
+    for _, roomEntity in ipairs(rooms) do
+        roomsByPosition[positionKey(
+            roomEntity.position.x,
+            roomEntity.position.y
+        )] = roomEntity
+    end
 
-    Wall.create(
-        ecsWorld, physicWorld,
-        x + width - thickness / 2, y + thickness / 2,
-        thickness, doorTop - (y + thickness / 2)
-    )
+    for _, roomEntity in ipairs(rooms) do
+        local x = roomEntity.position.x
+        local y = roomEntity.position.y
+        local room = roomEntity.room
 
-    Wall.create(
-        ecsWorld, physicWorld,
-        x + width - thickness / 2, doorBottom,
-        thickness, y + height - thickness / 2 - doorBottom
-    )
+        local horizontalLeft = x + THICKNESS / 2
+        local horizontalRight = x + room.width - THICKNESS / 2
+        local verticalTop = y + THICKNESS / 2
+        local verticalBottom = y + room.height - THICKNESS / 2
 
-    local upperY = upperRoom.position.y
-    local upperHeight = upperRoom.room.height
+        local doorLeft = x + (room.width - room.doorWidth) / 2
+        local doorRight = doorLeft + room.doorWidth
+        local doorTop = y + (room.height - room.doorWidth) / 2
+        local doorBottom = doorTop + room.doorWidth
 
-    Wall.create(
-        ecsWorld, physicWorld,
-        outerLeft, upperY - thickness / 2,
-        width + thickness, thickness
-    )
+        horizontalWall(
+            ecsWorld, physicWorld,
+            horizontalLeft, horizontalRight,
+            y - THICKNESS / 2,
+            room.doors.top and doorLeft or nil,
+            room.doors.top and doorRight or nil
+        )
 
-    Wall.create(
-        ecsWorld, physicWorld,
-        x - thickness / 2, upperY + thickness / 2,
-        thickness, upperHeight - thickness
-    )
+        verticalWall(
+            ecsWorld, physicWorld,
+            x + room.width - THICKNESS / 2,
+            verticalTop, verticalBottom,
+            room.doors.right and doorTop or nil,
+            room.doors.right and doorBottom or nil
+        )
 
-    Wall.create(
-        ecsWorld, physicWorld,
-        x + width - thickness / 2, upperY + thickness / 2,
-        thickness, upperHeight - thickness
-    )
+        local hasRoomBelow = roomsByPosition[positionKey(
+            x,
+            y + room.height
+        )] ~= nil
 
-    local rightX = rightRoom.position.x
-    local rightWidth = rightRoom.room.width
+        if not hasRoomBelow then
+            horizontalWall(
+                ecsWorld, physicWorld,
+                horizontalLeft, horizontalRight,
+                y + room.height - THICKNESS / 2,
+                room.doors.bottom and doorLeft or nil,
+                room.doors.bottom and doorRight or nil
+            )
+        end
 
-    Wall.create(
-        ecsWorld, physicWorld,
-        rightX + thickness / 2, y - thickness / 2,
-        rightWidth, thickness
-    )
+        local hasRoomToLeft = roomsByPosition[positionKey(
+            x - room.width,
+            y
+        )] ~= nil
 
-    Wall.create(
-        ecsWorld, physicWorld,
-        rightX + thickness / 2, y + height - thickness / 2,
-        rightWidth, thickness
-    )
-
-    Wall.create(
-        ecsWorld, physicWorld,
-        rightX + rightWidth - thickness / 2, y + thickness / 2,
-        thickness, height - thickness
-    )
-
-    local bottomY = bottomRoom.position.y
-    local bottomHeight = bottomRoom.room.height
-
-    Wall.create(
-        ecsWorld, physicWorld,
-        x - thickness / 2, bottomY + thickness / 2,
-        thickness, bottomHeight - thickness
-    )
-
-    Wall.create(
-        ecsWorld, physicWorld,
-        x + width - thickness / 2, bottomY + thickness / 2,
-        thickness, bottomHeight - thickness
-    )
-
-    Wall.create(
-        ecsWorld, physicWorld,
-        outerLeft, bottomY + bottomHeight - thickness / 2,
-        width + thickness, thickness
-    )
+        if not hasRoomToLeft then
+            verticalWall(
+                ecsWorld, physicWorld,
+                x - THICKNESS / 2,
+                verticalTop, verticalBottom,
+                room.doors.left and doorTop or nil,
+                room.doors.left and doorBottom or nil
+            )
+        end
+    end
 end
 
 return RoomWallBuilder
