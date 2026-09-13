@@ -14,7 +14,7 @@ require("src.components.wall")
 
 local Player = require("src.entities.player")
 local Room = require("src.entities.room")
-local Wall = require("src.entities.wall")
+local RoomWallBuilder = require("src.physics.room_wall_builder")
 
 
 local AnimationSystem = require("src.systems.animation_system")
@@ -26,6 +26,12 @@ local PhysicsSystem = require("src.systems.physics_system")
 local RoomRenderSystem = require("src.systems.room_render_system")
 
 local Gameplay = {}
+
+local function roomCenter(roomEntity)
+    return
+        roomEntity.position.x + roomEntity.room.width / 2,
+        roomEntity.position.y + roomEntity.room.height / 2
+end
 
 function Gameplay:enter()
     self.ecsWorld = Concord.world()
@@ -47,78 +53,24 @@ function Gameplay:enter()
     self.upperRoom = Room.create(
         self.ecsWorld, 160, -480, 1040, 576, 96, "bottom"
     )
-    local x = self.room.position.x
-    local y = self.room.position.y
-    local width = self.room.room.width
-    local height = self.room.room.height
-    local doorWidth = self.room.room.doorWidth
-
-    local thickness = 8
-
-    local doorLeft = x + (width - doorWidth) / 2
-    local doorRight = doorLeft + doorWidth
-    local outerLeft = x - thickness / 2
-    local outerRight = x + width + thickness / 2
-
-    Wall.create(
-        self.ecsWorld, self.physicWorld,
-        outerLeft, y - thickness / 2,
-        doorLeft - outerLeft, thickness
-    )
-
-    Wall.create(
-        self.ecsWorld, self.physicWorld,
-        doorRight, y - thickness / 2,
-        outerRight - doorRight, thickness
-    )
-
-    Wall.create(
-        self.ecsWorld, self.physicWorld,
-        outerLeft, y + height - thickness / 2,
-        width + thickness, thickness
-    )
-
-    Wall.create(
-        self.ecsWorld, self.physicWorld,
-        x - thickness / 2, y + thickness / 2,
-        thickness, height - thickness
-    )
-
-    Wall.create(
-        self.ecsWorld, self.physicWorld,
-        x + width - thickness / 2, y + thickness / 2,
-        thickness, height - thickness
-    )
-    local upperY = self.upperRoom.position.y
-    local upperHeight = self.upperRoom.room.height
-
-    Wall.create(
-        self.ecsWorld, self.physicWorld,
-        outerLeft, upperY - thickness / 2,
-        width + thickness, thickness
-    )
-
-    Wall.create(
-        self.ecsWorld, self.physicWorld,
-        x - thickness / 2, upperY + thickness / 2,
-        thickness, upperHeight - thickness
-    )
-
-    Wall.create(
-        self.ecsWorld, self.physicWorld,
-        x + width - thickness / 2, upperY + thickness / 2,
-        thickness, upperHeight - thickness
-    )
 
     self.player = Player.create(self.ecsWorld,
         self.physicWorld,
         love.graphics.getWidth() / 2,
         love.graphics.getHeight() / 2)
 
-    self.camera = Camera(
-        self.player.position.x,
-        self.player.position.y
+    RoomWallBuilder.create(
+        self.ecsWorld,
+        self.physicWorld,
+        self.room,
+        self.upperRoom
     )
+
+    self.activeRoom = self.room
+    self.transition = nil
+    self.camera = Camera(roomCenter(self.activeRoom))
+
+    self.camera = Camera(roomCenter(self.activeRoom))
 
     self.physicsSystem =
         self.ecsWorld:getSystem(PhysicsSystem)
@@ -134,20 +86,66 @@ end
 
 function Gameplay:update(dt)
     self.ecsWorld:emit("update", dt)
+
+    if self.transition then
+        local transition = self.transition
+
+        transition.elapsed = math.min(
+            transition.elapsed + dt,
+            transition.duration
+        )
+
+        local progress = transition.elapsed / transition.duration
+        local smoothProgress = progress * progress * (3 - 2 * progress)
+
+        self.camera:lookAt(
+            transition.fromX
+            + (transition.toX - transition.fromX) * smoothProgress,
+            transition.fromY
+            + (transition.toY - transition.fromY) * smoothProgress
+        )
+
+        if progress >= 1 then
+            self.activeRoom = transition.toRoom
+            self.transition = nil
+            self.player:give("controllable")
+        end
+
+        return
+    end
+
+    local nextRoom = self.room
+
+    if self.player.position.y < self.room.position.y then
+        nextRoom = self.upperRoom
+    end
+
+    if nextRoom ~= self.activeRoom then
+        self.player.velocity.x = 0
+        self.player.velocity.y = 0
+        self.player:remove("controllable")
+
+        local fromX, fromY = roomCenter(self.activeRoom)
+        local toX, toY = roomCenter(nextRoom)
+
+        self.transition = {
+            fromX = fromX,
+            fromY = fromY,
+            toX = toX,
+            toY = toY,
+            toRoom = nextRoom,
+            elapsed = 0,
+            duration = 0.45,
+        }
+    end
 end
 
 function Gameplay:draw()
-    local activeRoom = self.room
+    self.camera:attach()
+    self.ecsWorld:emit("draw")
+    self.camera:detach()
 
-    if self.player.position.y < self.room.position.y then
-        activeRoom = self.upperRoom
-    end
-
-    self.camera:lookAt(
-        activeRoom.position.x + activeRoom.room.width / 2,
-        activeRoom.position.y + activeRoom.room.height / 2
-    )
-
+    love.graphics.setColor(1, 1, 1, 1)
     self.camera:attach()
     self.ecsWorld:emit("draw")
     self.camera:detach()
