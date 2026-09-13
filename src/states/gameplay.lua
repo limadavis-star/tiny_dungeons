@@ -7,7 +7,7 @@ require("src.components.velocity")
 require("src.components.speed")
 require("src.components.controllable")
 require("src.components.collider")
-require("src.entities.room")
+require("src.components.room")
 require("src.components.wall")
 
 
@@ -23,6 +23,7 @@ local PlayerAnimationSystem = require("src.systems.player_animation_system")
 local PhysicsWorld = require("src.physics.physics_world")
 local PhysicsSystem = require("src.systems.physics_system")
 local RoomRenderSystem = require("src.systems.room_render_system")
+local DebugHud = require("src.ui.debug_hud")
 
 local Gameplay = {}
 
@@ -96,53 +97,10 @@ function Gameplay:draw()
     self.camera:detach()
 
 
-    love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.print("Tiny Dungeons", 32, 32)
-
-    love.graphics.print(
-        "Velocity X: " .. self.player.velocity.x,
-        32,
-        52
-    )
-
-    love.graphics.print(
-        "Velocity Y: " .. self.player.velocity.y,
-        32,
-        72
-    )
-
-    love.graphics.print(
-        "Player X: " .. math.floor(self.player.position.x),
-        32,
-        92
-    )
-
-    love.graphics.print(
-        "Player Y: " .. math.floor(self.player.position.y),
-        32,
-        112
-    )
-
-    love.graphics.print(
-        "Physics pool: "
-        .. #self.physicsSystem.pool,
-        32,
-        132
-    )
 
 
-    local physicsVelocityX,
-    physicsVelocityY =
-        self.player.collider.body.body:getLinearVelocity()
 
-    love.graphics.print(
-        "Physics velocity: "
-        .. math.floor(physicsVelocityX)
-        .. ", "
-        .. math.floor(physicsVelocityY),
-        32,
-        172
-    )
+    DebugHud.draw(self.player, self.physicsSystem)
 end
 
 return Gameplay
