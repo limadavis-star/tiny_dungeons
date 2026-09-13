@@ -21,14 +21,13 @@ function RoomRenderSystem:draw()
             room.height
         )
 
-        local doorWidth = room.doorWidth
-        local doorLeft = position.x + (room.width - doorWidth) / 2
-        local doorRight = doorLeft + doorWidth
-
         local left = position.x
         local right = position.x + room.width
         local top = position.y
         local bottom = position.y + room.height
+
+        local doorLeft = left + (room.width - room.doorWidth) / 2
+        local doorRight = doorLeft + room.doorWidth
 
         love.graphics.setColor(0.55, 0.75, 0.95, 1)
         love.graphics.setLineWidth(8)
@@ -48,7 +47,19 @@ function RoomRenderSystem:draw()
         end
 
         love.graphics.line(left, top, left, bottom)
-        love.graphics.line(right, top, right, bottom)
+
+        if room.doors.right then
+            local doorTop =
+                top + (room.height - room.doorWidth) / 2
+
+            local doorBottom =
+                doorTop + room.doorWidth
+
+            love.graphics.line(right, top, right, doorTop)
+            love.graphics.line(right, doorBottom, right, bottom)
+        else
+            love.graphics.line(right, top, right, bottom)
+        end
     end
 
     love.graphics.setLineWidth(1)
