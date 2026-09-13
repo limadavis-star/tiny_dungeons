@@ -1,4 +1,5 @@
 local Concord = require("libraries.concord")
+local Camera = require("libraries.hump.camera")
 
 require("src.components.position")
 require("src.components.animation")
@@ -90,6 +91,11 @@ function Gameplay:enter()
         love.graphics.getWidth() / 2,
         love.graphics.getHeight() / 2)
 
+    self.camera = Camera(
+        self.player.position.x,
+        self.player.position.y
+    )
+
     self.physicsSystem =
         self.ecsWorld:getSystem(PhysicsSystem)
 
@@ -107,7 +113,14 @@ function Gameplay:update(dt)
 end
 
 function Gameplay:draw()
+    self.camera:lookAt(
+        self.player.position.x,
+        self.player.position.y
+    )
+
+    self.camera:attach()
     self.ecsWorld:emit("draw")
+    self.camera:detach()
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.print("Tiny Dungeons", 32, 32)
 
