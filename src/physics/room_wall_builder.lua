@@ -2,7 +2,7 @@ local Wall = require("src.entities.wall")
 
 local RoomWallBuilder = {}
 
-function RoomWallBuilder.create(ecsWorld, physicWorld, lowerRoom, upperRoom, rightRoom)
+function RoomWallBuilder.create(ecsWorld, physicWorld, lowerRoom, upperRoom, rightRoom, bottomRoom)
     local x = lowerRoom.position.x
     local y = lowerRoom.position.y
     local width = lowerRoom.room.width
@@ -30,7 +30,13 @@ function RoomWallBuilder.create(ecsWorld, physicWorld, lowerRoom, upperRoom, rig
     Wall.create(
         ecsWorld, physicWorld,
         outerLeft, y + height - thickness / 2,
-        width + thickness, thickness
+        doorLeft - outerLeft, thickness
+    )
+
+    Wall.create(
+        ecsWorld, physicWorld,
+        doorRight, y + height - thickness / 2,
+        outerRight - doorRight, thickness
     )
 
     Wall.create(
@@ -94,6 +100,27 @@ function RoomWallBuilder.create(ecsWorld, physicWorld, lowerRoom, upperRoom, rig
         ecsWorld, physicWorld,
         rightX + rightWidth - thickness / 2, y + thickness / 2,
         thickness, height - thickness
+    )
+
+    local bottomY = bottomRoom.position.y
+    local bottomHeight = bottomRoom.room.height
+
+    Wall.create(
+        ecsWorld, physicWorld,
+        x - thickness / 2, bottomY + thickness / 2,
+        thickness, bottomHeight - thickness
+    )
+
+    Wall.create(
+        ecsWorld, physicWorld,
+        x + width - thickness / 2, bottomY + thickness / 2,
+        thickness, bottomHeight - thickness
+    )
+
+    Wall.create(
+        ecsWorld, physicWorld,
+        outerLeft, bottomY + bottomHeight - thickness / 2,
+        width + thickness, thickness
     )
 end
 

@@ -73,7 +73,8 @@ function Gameplay:enter()
         self.physicWorld,
         self.room,
         self.upperRoom,
-        self.rightRoom
+        self.rightRoom,
+        self.bottomRoom
     )
 
     self.camera = Camera(
