@@ -8,10 +8,12 @@ require("src.components.controllable")
 require("src.components.collider")
 require("src.entities.room")
 require("src.components.room")
+require("src.components.wall")
 
 
 local Player = require("src.entities.player")
 local Room = require("src.entities.room")
+local Wall = require("src.entities.wall")
 
 
 local AnimationSystem = require("src.systems.animation_system")
@@ -28,8 +30,50 @@ function Gameplay:enter()
     self.ecsWorld = Concord.world()
     self.physicWorld = PhysicsWorld.create()
 
+
     self.room = Room.create(self.ecsWorld, 160, 96, 1040, 576)
 
+    local x = self.room.position.x
+    local y = self.room.position.y
+    local width = self.room.room.width
+    local height = self.room.room.height
+    local thickness = 8
+
+    Wall.create(
+        self.ecsWorld,
+        self.physicWorld,
+        x - thickness / 2,
+        y - thickness / 2,
+        width + thickness,
+        thickness
+    )
+
+    Wall.create(
+        self.ecsWorld,
+        self.physicWorld,
+        x - thickness / 2,
+        y + height - thickness / 2,
+        width + thickness,
+        thickness
+    )
+
+    Wall.create(
+        self.ecsWorld,
+        self.physicWorld,
+        x - thickness / 2,
+        y + thickness / 2,
+        thickness,
+        height - thickness
+    )
+
+    Wall.create(
+        self.ecsWorld,
+        self.physicWorld,
+        x + width - thickness / 2,
+        y + thickness / 2,
+        thickness,
+        height - thickness
+    )
     self.ecsWorld:addSystems(
         InputSystem,
         PhysicsSystem,
